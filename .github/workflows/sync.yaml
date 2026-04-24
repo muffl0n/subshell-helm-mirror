@@ -25,10 +25,17 @@ jobs:
         run: |
           VERSION=$(curl -s https://api.github.com/repos/bitnami/charts-syncer/releases/latest \
             | jq -r '.tag_name')
-          curl -sSL "https://github.com/bitnami/charts-syncer/releases/download/${VERSION}/charts-syncer_${VERSION#v}_linux_amd64.tar.gz" \
-            | tar -xz charts-syncer
-          sudo mv charts-syncer /usr/local/bin/
+          echo "Installing charts-syncer ${VERSION}"
 
+          # Download and check what we actually got
+          curl -sSL -o /tmp/charts-syncer.tar.gz \
+            "https://github.com/bitnami/charts-syncer/releases/download/${VERSION}/charts-syncer_linux_amd64.tar.gz"
+
+          file /tmp/charts-syncer.tar.gz
+          tar -xz -f /tmp/charts-syncer.tar.gz -C /tmp
+          sudo mv /tmp/charts-syncer /usr/local/bin/
+          charts-syncer version
+      
       - name: Log in to GHCR
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" \
