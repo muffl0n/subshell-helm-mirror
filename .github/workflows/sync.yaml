@@ -24,7 +24,7 @@ jobs:
       - name: Install charts-syncer
         run: |
           curl -sSL -o /tmp/charts-syncer.tar.gz \
-            "https://github.com/bitnami/charts-syncer/releases/download/v2.4.0/charts-syncer_2.4.0_linux_amd64.tar.gz"
+            "https://github.com/bitnami/charts-syncer/releases/download/v2.4.0/charts-syncer_2.4.0_linux_x86_64.tar.gz"
           tar -xz -f /tmp/charts-syncer.tar.gz -C /tmp
           sudo mv /tmp/charts-syncer /usr/local/bin/
           charts-syncer version
