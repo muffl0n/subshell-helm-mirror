@@ -1,0 +1,65 @@
+# .github/workflows/sync-helm-charts.yaml
+name: Sync Helm Charts to GHCR
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write  # required to push to GHCR
+
+jobs:
+  sync:
+    name: Sync Charts
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_URL: https://subshell.github.io/helm-charts/
+      REGISTRY: ghcr.io
+      # charts will land at ghcr.io/your-org/helm-mirror/<chart-name>:<version>
+      REGISTRY_PATH: ${{ github.repository_owner }}/subshell-helm-mirror
+
+    steps:
+      - name: Install charts-syncer
+        run: |
+          VERSION=$(curl -s https://api.github.com/repos/bitnami/charts-syncer/releases/latest \
+            | jq -r '.tag_name')
+          curl -sSL "https://github.com/bitnami/charts-syncer/releases/download/${VERSION}/charts-syncer_${VERSION#v}_linux_amd64.tar.gz" \
+            | tar -xz charts-syncer
+          sudo mv charts-syncer /usr/local/bin/
+
+      - name: Log in to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" \
+            | helm registry login ghcr.io \
+              --username ${{ github.actor }} \
+              --password-stdin
+
+      - name: Write charts-syncer config
+        run: |
+          cat <<EOF > config.yaml
+          source:
+            repo:
+              kind: HELM
+              url: ${SOURCE_URL}
+
+          target:
+            repo:
+              kind: OCI
+              url: ${REGISTRY}/${REGISTRY_PATH}
+              auth:
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+          EOF
+
+      - name: Run sync
+        run: charts-syncer sync --config=config.yaml --latest-version-only=false
+
+      - name: List synced charts
+        if: success()
+        run: |
+          curl -s \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/orgs/${{ github.repository_owner }}/packages?package_type=container" \
+            | jq -r '.[] | select(.name | startswith("helm-mirror")) | "\(.name) — \(.visibility)"'
