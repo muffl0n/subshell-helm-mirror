@@ -47,7 +47,7 @@ jobs:
           target:
             repo:
               kind: OCI
-              url: ${REGISTRY}/${REGISTRY_PATH}
+              url: https://${REGISTRY}/${REGISTRY_PATH}
               auth:
                 username: ${{ github.actor }}
                 password: ${{ secrets.GITHUB_TOKEN }}
