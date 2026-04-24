@@ -23,23 +23,8 @@ jobs:
     steps:
       - name: Install charts-syncer
         run: |
-          VERSION=$(curl -s https://api.github.com/repos/bitnami/charts-syncer/releases/latest \
-            | jq -r '.tag_name')
-          echo "Installing charts-syncer ${VERSION}"
-
-          # Get the exact download URL from the API — don't guess the filename
-          DOWNLOAD_URL=$(curl -s https://api.github.com/repos/bitnami/charts-syncer/releases/latest \
-            | jq -r '.assets[] | select(.name | test("linux.*amd64|amd64.*linux")) | .browser_download_url' \
-            | grep -i '\.tar\.gz$' | head -1)
-
-          echo "Download URL: ${DOWNLOAD_URL}"
-
-          curl -sSL -o /tmp/charts-syncer.tar.gz "${DOWNLOAD_URL}"
-
-          echo "Downloaded file type:"
-          file /tmp/charts-syncer.tar.gz
-          cat /tmp/charts-syncer.tar.gz | head -c 200  # print first bytes if still text
-
+          curl -sSL -o /tmp/charts-syncer.tar.gz \
+            "https://github.com/bitnami/charts-syncer/releases/download/v2.4.0/charts-syncer_2.4.0_linux_amd64.tar.gz"
           tar -xz -f /tmp/charts-syncer.tar.gz -C /tmp
           sudo mv /tmp/charts-syncer /usr/local/bin/
           charts-syncer version
