@@ -52,7 +52,7 @@ jobs:
                 username: ${{ github.actor }}
                 password: ${{ secrets.GITHUB_TOKEN }}
           skipCharts: 
-            - oneko
+            - o-neko
           EOF
 
       - name: Run sync
