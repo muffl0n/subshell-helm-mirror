@@ -57,6 +57,4 @@ jobs:
           EOF
 
       - name: Run sync
-        run: |
-          # Disable terminal detection to suppress progress spinner
-          TERM=dumb charts-syncer sync --config=config.yaml --latest-version-only=false
+        run: charts-syncer sync --config=config.yaml --latest-version-only=false
