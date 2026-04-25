@@ -63,5 +63,5 @@ jobs:
         run: |
           curl -s \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/orgs/${{ github.repository_owner }}/packages?package_type=container" \
-            | jq -r '.[] | select(.name | startswith("helm-mirror")) | "\(.name) — \(.visibility)"'
+            "https://api.github.com/users/${{ github.repository_owner }}/packages?package_type=container" \
+            | jq -r '.[] | select(.name | startswith("subshell-helm-mirror")) | .name'
