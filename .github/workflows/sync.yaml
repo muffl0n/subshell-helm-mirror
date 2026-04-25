@@ -57,11 +57,3 @@ jobs:
 
       - name: Run sync
         run: charts-syncer sync --config=config.yaml --latest-version-only=false
-
-      - name: List synced charts
-        if: success()
-        run: |
-          curl -s \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/users/${{ github.repository_owner }}/packages?package_type=container" \
-            | jq -r '.[] | select(.name | startswith("subshell-helm-mirror")) | .name'
