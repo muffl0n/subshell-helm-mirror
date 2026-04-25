@@ -57,4 +57,4 @@ jobs:
           EOF
 
       - name: Run sync
-        run: charts-syncer sync --config=config.yaml --latest-version-only=false
+        run: charts-syncer sync --config=config.yaml --latest-version-only=false --log-level=error
