@@ -53,6 +53,7 @@ jobs:
                 password: ${{ secrets.GITHUB_TOKEN }}
           skipCharts: 
             - o-neko
+          skipImages: true
           EOF
 
       - name: Run sync
